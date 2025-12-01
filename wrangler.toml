@@ -1,0 +1,10 @@
+name = "santa"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_als"]
+pages_build_output_dir = "./dist"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "santa-db"
+database_id = "e9ca6de3-19a5-41d8-9699-0cad23d07e16"
