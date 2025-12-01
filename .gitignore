@@ -44,6 +44,7 @@ lerna-debug.log*
 # Cloudflare
 functions/**/*.js
 .wrangler/
+.dev.vars
 
 # Reference files (not part of app)
 *.pdf

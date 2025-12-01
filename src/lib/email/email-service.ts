@@ -218,13 +218,15 @@ export function createEmailService(options: {
 
 /**
  * Create an EmailService from Cloudflare environment bindings
+ * @param env - Environment variables
+ * @param requestUrl - Optional request URL to derive baseUrl from (used in development)
  */
 export function createEmailServiceFromEnv(env: {
   RESEND_API_KEY?: string;
   EMAIL_FROM?: string;
   EMAIL_FROM_NAME?: string;
   BASE_URL?: string;
-}): EmailService {
+}, requestUrl?: URL): EmailService {
   const hasResendKey = Boolean(env.RESEND_API_KEY);
   const provider: EmailProviderType = hasResendKey ? "resend" : "console";
 
@@ -234,11 +236,14 @@ export function createEmailServiceFromEnv(env: {
     );
   }
 
+  // Use BASE_URL from env, or derive from request URL, or fall back to localhost
+  const baseUrl = env.BASE_URL ?? (requestUrl ? `${requestUrl.protocol}//${requestUrl.host}` : "http://localhost:8788");
+
   return createEmailService({
     provider,
     apiKey: env.RESEND_API_KEY,
     fromEmail: env.EMAIL_FROM ?? "santa@example.com",
     fromName: env.EMAIL_FROM_NAME ?? "Secret Santa Shuffler",
-    baseUrl: env.BASE_URL ?? "http://localhost:5173",
+    baseUrl,
   });
 }

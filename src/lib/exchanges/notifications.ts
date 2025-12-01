@@ -27,12 +27,14 @@ import { createEmailServiceFromEnv } from "../email";
  * @param db - D1 database instance
  * @param env - Environment bindings for email service
  * @param exchangeId - The exchange to check
+ * @param requestUrl - Optional request URL for deriving base URL
  * @returns Whether the notification was sent
  */
 export async function checkAndNotifyAllComplete(
   db: D1Database,
   env: Env,
-  exchangeId: string
+  exchangeId: string,
+  requestUrl?: URL
 ): Promise<{ notified: boolean; error?: string }> {
   try {
     // Check if all questionnaires are complete
@@ -67,7 +69,7 @@ export async function checkAndNotifyAllComplete(
     const participantCount = await countParticipantsByExchange(db, exchangeId);
 
     // Send notification email
-    const emailService = createEmailServiceFromEnv(env);
+    const emailService = createEmailServiceFromEnv(env, requestUrl);
     const result = await emailService.sendAllCompleteNotification({
       organizerEmail: organizer.email,
       organizerName: organizer.name || undefined,

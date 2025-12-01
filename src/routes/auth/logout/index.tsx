@@ -6,13 +6,15 @@ import type { Env } from "~/lib/db/types";
 /**
  * Logout handler
  * 
- * Handles both GET and POST requests:
+ * POST only - GET requests redirect without logging out (prevents prefetch issues)
  * - Deletes the session from the database
  * - Clears the session cookie
  * - Redirects to the home page
  */
 export const onGet: RequestHandler = async (requestEvent) => {
-  await handleLogout(requestEvent);
+  // Don't logout on GET - just redirect to home
+  // This prevents Qwik's prefetching from logging users out
+  throw requestEvent.redirect(302, "/");
 };
 
 export const onPost: RequestHandler = async (requestEvent) => {

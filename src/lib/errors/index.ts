@@ -32,7 +32,14 @@ export function isDbUnavailable(db: unknown): db is undefined {
  * Get user-friendly error message for database errors
  */
 export function getDbErrorMessage(error: unknown): DbErrorResult {
-  const technicalMessage = error instanceof Error ? error.message : String(error);
+  let technicalMessage: string;
+  if (error instanceof Error) {
+    technicalMessage = error.message;
+  } else if (typeof error === 'object' && error !== null) {
+    technicalMessage = JSON.stringify(error);
+  } else {
+    technicalMessage = String(error);
+  }
   
   if (isNoSuchTableError(error)) {
     return {

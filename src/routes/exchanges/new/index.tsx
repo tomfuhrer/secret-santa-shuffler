@@ -13,7 +13,7 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { TreeIcon } from "~/components/icons";
 import { useRequireAuth } from "../layout";
-import { generateId } from "~/lib/security";
+import { generateId, requireAuth } from "~/lib/security";
 import { createExchange } from "~/lib/db";
 import type { Env } from "~/lib/db/types";
 import { getDbUnavailableMessage, getDbErrorMessage, logDbError } from "~/lib/errors";
@@ -73,8 +73,6 @@ export const useCreateExchange = routeAction$(
     }
 
     // Get authenticated user from session cookie
-    const { requireAuth } = await import("~/lib/security");
-    
     try {
       const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
       

@@ -269,7 +269,7 @@ export const useSubmitQuestionnaire = routeAction$(
           );
 
           if (organizer) {
-            const emailService = createEmailServiceFromEnv(env);
+            const emailService = createEmailServiceFromEnv(env, requestEvent.url);
 
             await emailService.sendAllCompleteNotification({
               organizerEmail: organizer.email,

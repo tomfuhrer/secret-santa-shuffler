@@ -40,7 +40,8 @@ import {
   updateExchangeStatus,
   findOrganizerById,
 } from "~/lib/db";
-import { generateId, generateParticipantToken, normalizeEmail, isValidEmail } from "~/lib/security";
+import { generateId, generateParticipantToken, normalizeEmail, isValidEmail, requireAuth } from "~/lib/security";
+import { findParticipantById } from "~/lib/db";
 import { createEmailServiceFromEnv } from "~/lib/email";
 import type { Env, Exchange, Participant } from "~/lib/db/types";
 import { getDbUnavailableMessage, getDbErrorMessage, logDbError } from "~/lib/errors";
@@ -113,8 +114,6 @@ export const useAddParticipant = routeAction$(
       return { success: false, error: getDbUnavailableMessage() };
     }
 
-    const { requireAuth } = await import("~/lib/security");
-    
     try {
       const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
       
@@ -156,7 +155,7 @@ export const useAddParticipant = routeAction$(
       }
 
       // Send questionnaire invite email
-      const emailService = createEmailServiceFromEnv(env);
+      const emailService = createEmailServiceFromEnv(env, requestEvent.url);
       const organizer = await findOrganizerById(db, user.id);
       
       await emailService.sendQuestionnaireInvite({
@@ -194,9 +193,6 @@ export const useResendInvite = routeAction$(
       return { success: false, error: getDbUnavailableMessage() };
     }
 
-    const { requireAuth } = await import("~/lib/security");
-    const { findParticipantById } = await import("~/lib/db");
-    
     try {
       const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
       
@@ -218,7 +214,7 @@ export const useResendInvite = routeAction$(
       }
 
       // Send questionnaire invite email
-      const emailService = createEmailServiceFromEnv(env);
+      const emailService = createEmailServiceFromEnv(env, requestEvent.url);
       const organizer = await findOrganizerById(db, user.id);
       
       await emailService.sendQuestionnaireInvite({
@@ -256,9 +252,6 @@ export const useUpdateParticipantEmail = routeAction$(
       return { success: false, error: getDbUnavailableMessage() };
     }
 
-    const { requireAuth } = await import("~/lib/security");
-    const { findParticipantById } = await import("~/lib/db");
-    
     try {
       const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
       
@@ -314,9 +307,6 @@ export const useRemoveParticipant = routeAction$(
       return { success: false, error: getDbUnavailableMessage() };
     }
 
-    const { requireAuth } = await import("~/lib/security");
-    const { findParticipantById } = await import("~/lib/db");
-    
     try {
       const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
       

@@ -93,7 +93,7 @@ export const useSendMagicLink = routeAction$(
       });
 
       // Send magic link email
-      const emailService = createEmailServiceFromEnv(env);
+      const emailService = createEmailServiceFromEnv(env, requestEvent.url);
       const result = await emailService.sendMagicLink({
         email,
         token,

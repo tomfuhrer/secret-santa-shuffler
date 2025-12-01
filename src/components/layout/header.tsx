@@ -73,13 +73,15 @@ export const Header = component$<HeaderProps>(
                         Hi, {userName}!
                       </span>
                     )}
-                    <Link
-                      href="/auth/logout"
-                      class="px-4 py-2 rounded-full text-sm font-medium text-gray-600 hover:text-christmas-red hover:bg-christmas-red/5 transition-colors min-h-[44px] flex items-center gap-2"
-                    >
-                      <LogOutIcon size={16} aria-hidden="true" />
-                      Sign Out
-                    </Link>
+                    <form action="/auth/logout" method="post">
+                      <button
+                        type="submit"
+                        class="px-4 py-2 rounded-full text-sm font-medium text-gray-600 hover:text-christmas-red hover:bg-christmas-red/5 transition-colors min-h-[44px] flex items-center gap-2"
+                      >
+                        <LogOutIcon size={16} aria-hidden="true" />
+                        Sign Out
+                      </button>
+                    </form>
                   </div>
                 </>
               ) : (
@@ -158,14 +160,16 @@ export const Header = component$<HeaderProps>(
                     New Exchange
                   </Link>
                   <div class="border-t border-gray-200 my-2" aria-hidden="true" />
-                  <Link
-                    href="/auth/logout"
-                    onClick$={closeMenu}
-                    class="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-christmas-red hover:bg-christmas-red/5 transition-colors"
-                  >
-                    <LogOutIcon size={18} aria-hidden="true" />
-                    Sign Out
-                  </Link>
+                  <form action="/auth/logout" method="post">
+                    <button
+                      type="submit"
+                      onClick$={closeMenu}
+                      class="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-christmas-red hover:bg-christmas-red/5 transition-colors w-full"
+                    >
+                      <LogOutIcon size={18} aria-hidden="true" />
+                      Sign Out
+                    </button>
+                  </form>
                 </>
               ) : (
                 <>

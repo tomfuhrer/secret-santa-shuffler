@@ -37,7 +37,7 @@ import {
 } from "~/lib/db";
 import { createSecretSantaAssignments, validateAssignments } from "~/lib/shuffle/sattolo";
 import { createEmailServiceFromEnv } from "~/lib/email";
-import { nowUnix } from "~/lib/security";
+import { nowUnix, requireAuth } from "~/lib/security";
 import type { Env, Exchange, Participant, Questionnaire } from "~/lib/db/types";
 import { getDbUnavailableMessage, getDbErrorMessage, logDbError } from "~/lib/errors";
 
@@ -118,8 +118,6 @@ export const useShuffleAction = routeAction$(async (_, requestEvent) => {
   if (!db) {
     return { success: false, error: getDbUnavailableMessage() };
   }
-
-  const { requireAuth } = await import("~/lib/security");
 
   try {
     const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
@@ -206,8 +204,6 @@ export const useSendSecretsAction = routeAction$(async (_, requestEvent) => {
     return { success: false, error: getDbUnavailableMessage() };
   }
 
-  const { requireAuth } = await import("~/lib/security");
-
   try {
     const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
 
@@ -240,7 +236,7 @@ export const useSendSecretsAction = routeAction$(async (_, requestEvent) => {
     const organizer = await findOrganizerById(db, user.id);
 
     // Create email service
-    const emailService = createEmailServiceFromEnv(env);
+    const emailService = createEmailServiceFromEnv(env, requestEvent.url);
 
     // Send email to each participant
     let sentCount = 0;

@@ -14,6 +14,7 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { useRequireAuth } from "../../layout";
 import { findExchangeByIdForOrganizer, updateExchange } from "~/lib/db";
+import { requireAuth } from "~/lib/security";
 import type { Env, Exchange } from "~/lib/db/types";
 import { getDbUnavailableMessage, getDbErrorMessage, logDbError } from "~/lib/errors";
 
@@ -102,8 +103,6 @@ export const useUpdateExchange = routeAction$(
       };
     }
 
-    const { requireAuth } = await import("~/lib/security");
-    
     try {
       const user = await requireAuth(db, requestEvent.cookie, "/auth/login");
       

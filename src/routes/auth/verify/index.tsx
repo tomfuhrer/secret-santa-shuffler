@@ -55,18 +55,25 @@ export const useVerifyMagicLink = routeLoader$<VerificationResult>(
       };
     }
 
+    // Find valid (unused, not expired) magic link
+    let magicLink;
     try {
-      // Find valid (unused, not expired) magic link
-      const magicLink = await findValidMagicLinkByToken(db, token);
+      magicLink = await findValidMagicLinkByToken(db, token);
+    } catch (error) {
+      logDbError("Verify", error);
+      const { userMessage } = getDbErrorMessage(error);
+      return { success: false, error: userMessage };
+    }
 
-      if (!magicLink) {
-        return {
-          success: false,
-          error:
-            "This sign-in link is invalid or has expired. Please request a new one.",
-        };
-      }
+    if (!magicLink) {
+      return {
+        success: false,
+        error:
+          "This sign-in link is invalid or has expired. Please request a new one.",
+      };
+    }
 
+    try {
       // Mark magic link as used (single-use)
       await markMagicLinkAsUsed(db, magicLink.id);
 
@@ -80,13 +87,18 @@ export const useVerifyMagicLink = routeLoader$<VerificationResult>(
       // Create session
       const sessionToken = generateSessionToken();
       const sessionExpiry = getSessionExpiry();
+      const sessionId = generateId();
 
-      await createSession(db, {
-        id: generateId(),
+      console.log(`[Verify] Creating session: id=${sessionId}, organizer=${organizer.id}, expires=${sessionExpiry}`);
+      
+      const session = await createSession(db, {
+        id: sessionId,
         organizer_id: organizer.id,
         token: sessionToken,
         expires_at: sessionExpiry,
       });
+      
+      console.log(`[Verify] Session created in DB: id=${session.id}`);
 
       // Set session cookie
       requestEvent.cookie.set(
@@ -104,23 +116,14 @@ export const useVerifyMagicLink = routeLoader$<VerificationResult>(
       console.log(
         `[Verify] Session created for ${organizer.email} (${created ? "new user" : "existing user"})`
       );
-
-      // Redirect to dashboard
-      throw requestEvent.redirect(302, "/dashboard/");
-
     } catch (error) {
-      // Re-throw redirects
-      if (error instanceof Response) {
-        throw error;
-      }
-
       logDbError("Verify", error);
       const { userMessage } = getDbErrorMessage(error);
-      return {
-        success: false,
-        error: userMessage,
-      };
+      return { success: false, error: userMessage };
     }
+
+    // Redirect to dashboard (outside try/catch so it's not caught)
+    throw requestEvent.redirect(302, "/dashboard/");
   }
 );
 
