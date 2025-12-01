@@ -1,7 +1,11 @@
 name = "santa"
+main = "dist/_worker.js"
 compatibility_date = "2025-11-01"
 compatibility_flags = ["nodejs_als"]
-pages_build_output_dir = "./dist"
+
+# Static assets (Workers Static Assets - current approach)
+[assets]
+directory = "./dist"
 
 # D1 Database binding
 [[d1_databases]]
